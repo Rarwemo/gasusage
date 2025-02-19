@@ -12,7 +12,7 @@ const Homepage = () => {
     return (
         <div className="gasusage-homepage">
             <h1>Welcome to your Gas Usage Website</h1>
-            <p>The trusted site in manageing your gas usage</p>
+            <p>The trusted site in managing your gas usage</p>
             <div className={`gasusage-color-box ${isBlue ? 'gasusage-blue' : 'gasusage-red'}`}></div>
             <button className="gasusage-button" onClick={toggleColor}>Change Color</button>
         </div>
