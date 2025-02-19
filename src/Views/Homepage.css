@@ -1,0 +1,30 @@
+/* src/Views/Homepage.css */
+.gasusage-homepage {
+    text-align: center;
+    padding: 50px;
+}
+
+.gasusage-homepage h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.gasusage-homepage p {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.gasusage-color-box {
+    width: 100px;
+    height: 100px;
+    margin: 20px auto;
+    transition: background-color 0.5s ease-in-out;
+}
+
+.gasusage-color-box.gasusage-red {
+    background-color: red;
+}
+
+.gasusage-color-box.gasusage-blue {
+    background-color: blue;
+}
