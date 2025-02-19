@@ -1,26 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
-import Homepage from './Views/Homepage';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import SignIn from './components/Auth/SignIn';
+import SignUp from './components/Auth/SignUp';
+import Dashboard from './components/Dashboard/Dashboard';
+import Settings from './components/Settings/Settings';
+import PrivateRoute from './components/Auth/PrivateRoute';
+import Navbar from './components/Navigation/Navbar';
+import Reports from './components/Reports/Reports';
 
 function App() {
   return (
-    <div className="App">
-      <Homepage />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AuthProvider>
+        <NotificationProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <Settings />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <PrivateRoute>
+                  <Reports />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </NotificationProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
