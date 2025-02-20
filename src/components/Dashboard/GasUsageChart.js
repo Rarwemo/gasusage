@@ -27,7 +27,9 @@ const GasUsageChart = ({ cylinders }) => {
         return last7Days.map(date => ({
             date,
             ...cylinders.reduce((acc, cylinder) => {
-                acc[`${cylinder.size}KG`] = cylinder.currentWeight;
+                // Calculate percentage remaining
+                const percentageRemaining = (cylinder.currentWeight / cylinder.size) * 100;
+                acc[`${cylinder.size}KG`] = percentageRemaining;
                 return acc;
             }, {})
         }));
@@ -64,7 +66,7 @@ const GasUsageChart = ({ cylinders }) => {
                 color="primary" 
                 gutterBottom
             >
-                Gas Usage Over Time
+                Gas Usage Over Time (% Remaining)
             </Typography>
             <ResponsiveContainer width="100%" height={isMobile ? 200 : 240}>
                 <LineChart data={chartData}>
@@ -77,8 +79,17 @@ const GasUsageChart = ({ cylinders }) => {
                     <YAxis 
                         tick={{ fontSize: isMobile ? 12 : 14 }}
                         width={isMobile ? 30 : 40}
+                        domain={[0, 100]}
+                        label={{ 
+                            value: '% Remaining', 
+                            angle: -90, 
+                            position: 'insideLeft',
+                            style: { fontSize: isMobile ? 12 : 14 }
+                        }}
                     />
-                    <Tooltip />
+                    <Tooltip 
+                        formatter={(value) => [`${value.toFixed(1)}%`, 'Remaining']}
+                    />
                     <Legend 
                         wrapperStyle={{ 
                             fontSize: isMobile ? 12 : 14,
