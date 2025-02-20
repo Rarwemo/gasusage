@@ -7,7 +7,7 @@ import GasUsageChart from './GasUsageChart';
 import AddGasModal from './AddGasModal';
 import GasCylinderList from './GasCylinderList';
 
-const LOW_GAS_THRESHOLD = 3; // KG
+const LOW_GAS_THRESHOLD = 0.2; // KG
 
 const Dashboard = () => {
     const { currentUser } = useAuth();
@@ -23,7 +23,7 @@ const Dashboard = () => {
             
             // Check for low gas levels using user's settings
             if (data.settings?.lowGasNotifications) {
-                const threshold = data.settings.notificationThreshold || 3;
+                const threshold = data.settings.notificationThreshold || 0.2;
                 data.gasCylinders?.forEach(cylinder => {
                     if (cylinder.currentWeight <= threshold) {
                         showNotification(
