@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Grid, Paper, Button, useTheme, useMediaQuery } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotification } from '../../contexts/NotificationContext';
-import { subscribeToGasUpdates, updateGasWeight } from '../../services/gasService';
+import { subscribeToGasUpdates, updateGasWeight, deleteCylinder } from '../../services/gasService';
 import GasUsageChart from './GasUsageChart';
 import AddGasModal from './AddGasModal';
 import GasCylinderList from './GasCylinderList';
+import SelectableText from '../common/SelectableText';
 
-const LOW_GAS_THRESHOLD = 0.2; // KG
+const LOW_GAS_THRESHOLD = 5; // Changed to 5%
 
 const Dashboard = () => {
     const { currentUser } = useAuth();
@@ -21,18 +22,16 @@ const Dashboard = () => {
         const unsubscribe = subscribeToGasUpdates(currentUser.uid, (data) => {
             setUserData(data);
             
-            // Check for low gas levels using user's settings
-            if (data.settings?.lowGasNotifications) {
-                const threshold = data.settings.notificationThreshold || 0.2;
-                data.gasCylinders?.forEach(cylinder => {
-                    if (cylinder.currentWeight <= threshold) {
-                        showNotification(
-                            `Gas cylinder ${cylinder.size}KG is running low (${cylinder.currentWeight}KG remaining)`,
-                            'warning'
-                        );
-                    }
-                });
-            }
+            // Check for low gas levels
+            data.gasCylinders?.forEach(cylinder => {
+                const percentageRemaining = (cylinder.currentWeight / cylinder.size) * 100;
+                if (percentageRemaining <= LOW_GAS_THRESHOLD) {
+                    showNotification(
+                        `Gas cylinder ${cylinder.size}KG is at ${percentageRemaining.toFixed(1)}% remaining`,
+                        'warning'
+                    );
+                }
+            });
         });
 
         return () => unsubscribe();
@@ -52,15 +51,29 @@ const Dashboard = () => {
         }
     };
 
+    const handleDeleteCylinder = async (cylinderId) => {
+        try {
+            await deleteCylinder(currentUser.uid, cylinderId);
+            showNotification('Gas cylinder removed successfully', 'success');
+        } catch (error) {
+            console.error('Error deleting cylinder:', error);
+            showNotification('Failed to remove gas cylinder', 'error');
+        }
+    };
+
     return (
-        <Container maxWidth="lg" sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
-            <Grid container spacing={isMobile ? 2 : 3}>
-                <Grid item xs={12}>
-                    <Paper sx={{ 
-                        p: { xs: 2, sm: 3 },
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={4}>
+                    <Paper 
+                        sx={{ 
+                            p: { xs: 2, sm: 3 },
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: '100%',
+                            background: 'linear-gradient(to right bottom, #ffffff, #f8f9fa)',
+                        }}
+                    >
                         <Box sx={{
                             display: 'flex',
                             flexDirection: isMobile ? 'column' : 'row',
@@ -73,14 +86,19 @@ const Dashboard = () => {
                                 color="primary" 
                                 gutterBottom
                             >
-                                Welcome, {userData?.name || 'User'}
+                                Welcome, <SelectableText text={userData?.name || 'User'} />
                             </Typography>
                             <Button 
                                 variant="contained" 
                                 onClick={() => setIsAddModalOpen(true)}
                                 sx={{ 
                                     mt: isMobile ? 2 : 0,
-                                    alignSelf: isMobile ? 'stretch' : 'flex-start'
+                                    alignSelf: isMobile ? 'stretch' : 'flex-start',
+                                    background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
+                                    color: 'white',
+                                    '&:hover': {
+                                        background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)',
+                                    }
                                 }}
                             >
                                 Add New Gas Cylinder
@@ -110,6 +128,7 @@ const Dashboard = () => {
                         <GasCylinderList 
                             cylinders={userData?.gasCylinders || []}
                             onUpdateWeight={handleWeightUpdate}
+                            onDeleteCylinder={handleDeleteCylinder}
                         />
                     </Paper>
                 </Grid>
