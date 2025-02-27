@@ -11,7 +11,6 @@ export const subscribeToGasUpdates = (userId, callback) => {
 
 export const updateGasWeight = async (userId, cylinderId, newWeight) => {
     const userRef = doc(db, 'users', userId);
-    
     try {
         await updateDoc(userRef, {
             gasCylinders: arrayUnion({

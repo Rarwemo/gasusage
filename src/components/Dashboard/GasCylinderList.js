@@ -18,6 +18,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNotification } from '../../contexts/NotificationContext';
+import SensorReadings from './SensorReadings';
+import { useAuth } from '../../contexts/AuthContext';
 
 const GasCylinderList = ({ cylinders, onDeleteCylinder }) => {
     const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -25,6 +27,7 @@ const GasCylinderList = ({ cylinders, onDeleteCylinder }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const { showNotification } = useNotification();
+    const { currentUser } = useAuth();
 
     const getProgressColor = (percentage) => {
         if (percentage <= 5) return 'error';
@@ -117,6 +120,12 @@ const GasCylinderList = ({ cylinders, onDeleteCylinder }) => {
                                                 >
                                                     Last Updated: {new Date(cylinder.lastUpdated).toLocaleDateString()}
                                                 </Typography>
+                                                <Box sx={{ mt: 2 }}>
+                                                    <SensorReadings 
+                                                        userId={currentUser.uid}
+                                                        cylinderId={cylinder.id}
+                                                    />
+                                                </Box>
                                             </Box>
                                         }
                                     />

@@ -7,6 +7,7 @@ import GasUsageChart from './GasUsageChart';
 import AddGasModal from './AddGasModal';
 import GasCylinderList from './GasCylinderList';
 import SelectableText from '../common/SelectableText';
+import SensorReadings from './SensorReadings';
 
 const LOW_GAS_THRESHOLD = 5; // Changed to 5%
 
@@ -130,6 +131,16 @@ const Dashboard = () => {
                             onUpdateWeight={handleWeightUpdate}
                             onDeleteCylinder={handleDeleteCylinder}
                         />
+                    </Paper>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Paper sx={{ 
+                        p: { xs: 2, sm: 3 },
+                        display: 'flex',
+                        flexDirection: 'column'
+                    }}>
+                        <SensorReadings />
                     </Paper>
                 </Grid>
             </Grid>
